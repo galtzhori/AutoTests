@@ -127,20 +127,18 @@ public class LinkedinConnections {
         WebElement li = this.connectionsHolder.findElement(By.xpath("./child::*"));
         List<WebElement> list = li.findElements(By.xpath("./child::*"));
         List<String> connectionsData = new ArrayList<>();
-        BufferedWriter fileWriter = new BufferedWriter(new FileWriter("connections.json",false));
+        BufferedWriter fileWriter = new BufferedWriter(new FileWriter("connections.json", false));
 
         for (WebElement i : list) {
 
+
             // Print the child elements
-            connectionsData.add(i.findElement(By.className("mn-connection-card__name")).getText());
-            connectionsData.add(i.findElement(By.className("mn-connection-card__occupation")).getText());
-            connectionsData.add(i.findElement(By.xpath("//time")).getText());
+            connectionsData.add("\n\"" + i.findElement(By.className("mn-connection-card__name")).getText().replaceAll("\"", "'") + "\"");
+            connectionsData.add("\n\"" + i.findElement(By.className("mn-connection-card__occupation")).getText().replaceAll("\"", "'") + "\"");
+            connectionsData.add("\n\"" + i.findElement(By.xpath("//time")).getText() + "\"");
         }
         fileWriter.write("{\"myName\": \"" + name + "\",\n\"myWorkplace\": \"Intel\",\n\"city\": \"Tel-Aviv\",\n\"connections\":\n");
         String connectionsDataString = connectionsData.toString();
-        connectionsDataString = connectionsDataString.replace("[", "[\"");
-        connectionsDataString = connectionsDataString.replaceAll(", ", "\",\n\"");
-        connectionsDataString = connectionsDataString.replace("]", "\"\n]");
         fileWriter.write(connectionsDataString + "\n}");
         fileWriter.close();
     }

@@ -20,33 +20,29 @@ public class LinkedinConnections {
     String password;
 
     public LinkedinConnections(String username, String password) {
-
         this.username = username;
         this.password = password;
         DriverInstance driverInstance = new DriverInstance();
         driver = driverInstance.driver;
-        wait = new WebDriverWait(driver, Duration.ofMillis(1000));
+        wait = new WebDriverWait(driver, Duration.ofMillis(5000));
         try {
-
             this.SignInToLinkedin();
             this.ShowConnectionPage();
             this.LoadAllConnections();
             this.WriteConnections();
 
         } catch (Exception e) {
+            System.out.println("something went wrong");
             e.printStackTrace();
         } finally {
             // Close the browser
             driver.quit();
         }
-
-
     }
 
     void SignInToLinkedin() throws Exception {
         // 1.2 Navigate to LinkedIn page
         driver.get("https://www.linkedin.com/");
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         // 1.3 Click “Sign in” to navigate to the login page
 
         WebElement signInButton = wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Sign in")));
@@ -70,8 +66,6 @@ public class LinkedinConnections {
             System.out.println("login info is incorrect!");
             throw new Exception();
         }
-
-
     }
 
     void ShowConnectionPage() throws Exception {
@@ -97,7 +91,7 @@ public class LinkedinConnections {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("mn-connections__header")));
             connectionsHolder = driver.findElement(By.xpath("//div[@class='scaffold-finite-scroll__content']"));
         } catch (Exception e) {
-            System.out.println("no connections");
+            System.out.println("no connections to show");
             throw new Exception();
         }
 
@@ -130,16 +124,13 @@ public class LinkedinConnections {
         BufferedWriter fileWriter = new BufferedWriter(new FileWriter("connections.json", false));
 
         for (WebElement i : list) {
-
-
             // Print the child elements
             connectionsData.add("\n\"" + i.findElement(By.className("mn-connection-card__name")).getText().replaceAll("\"", "'") + "\"");
             connectionsData.add("\n\"" + i.findElement(By.className("mn-connection-card__occupation")).getText().replaceAll("\"", "'") + "\"");
             connectionsData.add("\n\"" + i.findElement(By.xpath("//time")).getText() + "\"");
         }
         fileWriter.write("{\"myName\": \"" + name + "\",\n\"myWorkplace\": \"Intel\",\n\"city\": \"Tel-Aviv\",\n\"connections\":\n");
-        String connectionsDataString = connectionsData.toString();
-        fileWriter.write(connectionsDataString + "\n}");
+        fileWriter.write(connectionsData + "\n}");
         fileWriter.close();
     }
 
